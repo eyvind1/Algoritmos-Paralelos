@@ -3,7 +3,13 @@
 #include "mpi.h"
 
 #define MAX_CONTRIB 20
+int potencia_minima(int p) {
+   int temp = 1;
 
+   while (temp < p) 
+      temp *= 2;
+   return temp;
+}
 int suma_global(int my_contrib, int my_rank, int p, MPI_Comm comm) {
    int sum = my_contrib;
    int temp;
@@ -13,7 +19,7 @@ int suma_global(int my_contrib, int my_rank, int p, MPI_Comm comm) {
    int done = 0;
    int i_send;
 
-   while (!done && divisor <= smallest_power_two(p)) {
+   while (!done && divisor <= potencia_minima(p)) {
       i_send = my_rank % divisor;
       if (i_send) {
          partner = my_rank - proc_diff;
@@ -35,13 +41,7 @@ int suma_global(int my_contrib, int my_rank, int p, MPI_Comm comm) {
 } 
 
 
-int smallest_power_two(int p) {
-   int temp = 1;
 
-   while (temp < p) 
-      temp *= 2;
-   return temp;
-}
 
 int main() {
    int p, my_rank;
@@ -56,7 +56,7 @@ int main() {
 
    srandom(my_rank);
    x = random() % MAX_CONTRIB;
-   printf("Proceso %d > x = %d, p = %d\n", my_rank, x, p);
+   printf("Proceso %d : Valor de x = %d\n", my_rank, x);
 
    total = suma_global(x, my_rank, p, comm);
 
